@@ -1,51 +1,77 @@
+"use client";
 
-'use client';
+import { useState } from "react";
+import Head from "next/head";
+import {
+  FaHandsHelping,
+  FaUser,
+  FaBriefcase,
+  FaCalendarAlt,
+  FaPhone,
+  FaEnvelope,
+} from "react-icons/fa";
+import axios from "axios"; // استيراد Axios
+import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
-import { useState } from 'react';
-import Head from 'next/head';
-import { FaHandsHelping, FaUser, FaBriefcase, FaCalendarAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
-import axios from 'axios'; // استيراد Axios
 
 export default function VolunteerPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    age: '',
-    job: '',
-    phone: '',
-    email: '',
-    experience: '',
-    interests: '',
-    availability: ''
-  });
+  const searchParams = useSearchParams();
+  const project_id = searchParams.get("project_id");
+  const params = useParams();
 
+  const [formData, setFormData] = useState({
+    name: "",
+    age: "",
+    job: "",
+    phone: "",
+    email: "",
+    experience: "",
+    interests: "",
+    availability: "",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
+  // في دالة handleSubmit:
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await axios.post('/api/volunteer', formData); // إرسال البيانات إلى API
 
-    console.log(response.data.message,'تم تقديم طلب التطوع:', formData);
-    // هنا يمكنك إضافة الكود الخاص بإرسال البيانات إلى الخادم
-    alert('شكراً لتسجيلك كمتطوع! سنتواصل معك قريباً.');
-    setFormData({
-      name: '',
-      age: '',
-      job: '',
-      phone: '',
-      email: '',
-      experience: '',
-      interests: '',
-      availability: ''
-    });
-  
-  } ;
+    try {
+      const response = await axios.post(
+        `/api/volunteer?project_id=${project_id || ""}`,
+        formData
+      );
+
+      if (response.data.message === "تم تسجيلك كمتطوع بنجاح!") {
+        alert("شكراً لتسجيلك! سنتواصل معك قريباً.");
+        setFormData({
+          name: "",
+          age: "",
+          job: "",
+          phone: "",
+          email: "",
+          experience: "",
+          interests: "",
+          availability: "",
+        });
+      } else {
+        alert(response.data.message); // رسالة الخطأ من السيرفر
+      }
+    } catch (error) {
+      console.error(
+        "فشل التسجيل:",
+        error.response?.data?.message || error.message
+      );
+      alert("حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.");
+    }
+  };
 
   return (
     <div className="min-h-screen ">
@@ -54,37 +80,54 @@ export default function VolunteerPage() {
         <meta name="description" content="نموذج التسجيل كمتطوع" />
       </Head>
 
-      <main className="container mx-auto px-4 py-12" >
-      <div className="max-w-3xl mx-auto">
-            {/* رأس الصفحة */}
-            <div className="text-center mb-10">
+      <main className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          {/* رأس الصفحة */}
+          <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center p-4 bg-[#fa9e1b] rounded-full mb-4">
               <FaHandsHelping className="text-white text-3xl" />
             </div>
-              <h1 className="text-3xl font-extrabold text-[#31124b] mb-2">التسجيل كمتطوع</h1>
-              <p className="text-[#31124b] mt-5 text-2xl "> انضم إلينا وكن جزءاً من التغيير الإيجاب</p>
-            </div>
-            </div>
-        <div   className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <h1 className="text-3xl font-extrabold text-[#31124b] mb-2">
+              التسجيل كمتطوع
+            </h1>
+            <p className="text-[#31124b] mt-5 text-2xl ">
+              {" "}
+              انضم إلينا وكن جزءاً من التغيير الإيجاب
+            </p>
+          </div>
+        </div>
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* رأس النموذج */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden"  dir="rtl">
-                <div className="bg-gradient-to-r from-[#31124b] to-[#fa9e1b] py-6 px-8">
-                  <h2 className="text-2xl font-bold text-white">نموذج التسجيل كمتطوع </h2>
-                  <p className="text-white text-opacity-90 mt-5  ">الحقول المطلوبة مميزة بعلامة (*)</p>
-                </div>
-                </div>
+          <div
+            className="bg-white rounded-lg shadow-lg overflow-hidden"
+            dir="rtl"
+          >
+            <div className="bg-gradient-to-r from-[#31124b] to-[#fa9e1b] py-6 px-8">
+              <h2 className="text-2xl font-bold text-white">
+                نموذج التسجيل كمتطوع{" "}
+              </h2>
+              <p className="text-white text-opacity-90 mt-5  ">
+                الحقول المطلوبة مميزة بعلامة (*)
+              </p>
+            </div>
+          </div>
 
           {/* نموذج التسجيل */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-6 bg-gray-50 "  dir="rtl"  >
+          <form
+            onSubmit={handleSubmit}
+            className="p-8 space-y-6 bg-gray-50 "
+            dir="rtl"
+          >
             <div className="grid md:grid-cols-2 gap-6">
               {/* الاسم الكامل */}
-              <div dir='ltr'
-              >
-                <label  className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="name" 
->
-                  <span className="flex items-center justify-end gap-2" >
-                  <span className="text-red-500">*</span >الاسم الكامل
-                    <FaUser className="text-[#31124b]" /> 
+              <div dir="ltr">
+                <label
+                  className="block text-right mb-2 font-semibold text-[#31124b]"
+                  htmlFor="name"
+                >
+                  <span className="flex items-center justify-end gap-2">
+                    <span className="text-red-500">*</span>الاسم الكامل
+                    <FaUser className="text-[#31124b]" />
                   </span>
                 </label>
                 <input
@@ -101,10 +144,14 @@ export default function VolunteerPage() {
 
               {/* العمر */}
               <div>
-                <label dir='ltr' className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="age">
+                <label
+                  dir="ltr"
+                  className="block text-right mb-2 font-semibold text-[#31124b]"
+                  htmlFor="age"
+                >
                   <span className="flex items-center justify-end gap-2">
-                  <span className="text-red-500">*</span>العمر 
-                    <FaCalendarAlt className="text-[#31124b]" /> 
+                    <span className="text-red-500">*</span>العمر
+                    <FaCalendarAlt className="text-[#31124b]" />
                   </span>
                 </label>
                 <input
@@ -122,11 +169,14 @@ export default function VolunteerPage() {
               </div>
 
               {/* الوظيفة/المهنة */}
-              <div dir='ltr' >
-                <label className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="job">
+              <div dir="ltr">
+                <label
+                  className="block text-right mb-2 font-semibold text-[#31124b]"
+                  htmlFor="job"
+                >
                   <span className="flex items-center justify-end gap-2">
-                  <span className="text-red-500">*</span>الوظيفة/المهنة
-                    <FaBriefcase className="text-[#31124b]" /> 
+                    <span className="text-red-500">*</span>الوظيفة/المهنة
+                    <FaBriefcase className="text-[#31124b]" />
                   </span>
                 </label>
                 <input
@@ -139,17 +189,18 @@ export default function VolunteerPage() {
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#31124b] text-right"
                   placeholder="أدخل وظيفتك الحالية"
                   dir="rtl"
-
                 />
               </div>
 
               {/* رقم الهاتف */}
-              <div dir='ltr' >
-                
-                <label className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="phone">
+              <div dir="ltr">
+                <label
+                  className="block text-right mb-2 font-semibold text-[#31124b]"
+                  htmlFor="phone"
+                >
                   <span className="flex items-center justify-end gap-2">
-                  <span className="text-red-500">*</span>رقم الهاتف 
-                    <FaPhone className="text-[#31124b]" /> 
+                    <span className="text-red-500">*</span>رقم الهاتف
+                    <FaPhone className="text-[#31124b]" />
                   </span>
                 </label>
                 <input
@@ -162,19 +213,18 @@ export default function VolunteerPage() {
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#31124b] text-right"
                   placeholder="أدخل رقم هاتفك"
                   dir="rtl"
-
                 />
               </div>
 
               {/* البريد الإلكتروني */}
-              <div dir='ltr' >
-                <label className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="email">
+              <div dir="ltr">
+                <label
+                  className="block text-right mb-2 font-semibold text-[#31124b]"
+                  htmlFor="email"
+                >
                   <span className="flex items-center justify-end gap-2">
-                  <span className="text-red-500">*</span>البريد الإلكتروني 
-
-                    <FaEnvelope className="text-[#31124b]"dir="rtl"
-                    
-                    /> 
+                    <span className="text-red-500">*</span>البريد الإلكتروني
+                    <FaEnvelope className="text-[#31124b]" dir="rtl" />
                   </span>
                 </label>
                 <input
@@ -190,11 +240,12 @@ export default function VolunteerPage() {
               </div>
 
               {/* أوقات التطوع المفضلة */}
-              <div dir='ltr' >
- 
-                <label className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="availability">
-                <span className="text-red-500 mr-2">*</span>
-
+              <div dir="ltr">
+                <label
+                  className="block text-right mb-2 font-semibold text-[#31124b]"
+                  htmlFor="availability"
+                >
+                  <span className="text-red-500 mr-2">*</span>
                   أوقات التطوع المفضلة
                 </label>
 
@@ -207,7 +258,9 @@ export default function VolunteerPage() {
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#31124b] text-right"
                 >
                   <option value="">اختر الوقت المناسب</option>
-                  <option value="weekdays_morning">أيام الأسبوع - صباحًا</option>
+                  <option value="weekdays_morning">
+                    أيام الأسبوع - صباحًا
+                  </option>
                   <option value="weekdays_evening">أيام الأسبوع - مساءً</option>
                   <option value="weekends">عطلة نهاية الأسبوع</option>
                   <option value="flexible">مرن / حسب الحاجة</option>
@@ -217,7 +270,10 @@ export default function VolunteerPage() {
 
             {/* الخبرات السابقة */}
             <div>
-              <label className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="experience">
+              <label
+                className="block text-right mb-2 font-semibold text-[#31124b]"
+                htmlFor="experience"
+              >
                 الخبرات السابقة في مجال التطوع (إن وجدت)
               </label>
               <textarea
@@ -233,7 +289,10 @@ export default function VolunteerPage() {
 
             {/* المهارات والاهتمامات */}
             <div>
-              <label className="block text-right mb-2 font-semibold text-[#31124b]" htmlFor="interests">
+              <label
+                className="block text-right mb-2 font-semibold text-[#31124b]"
+                htmlFor="interests"
+              >
                 المهارات والاهتمامات
               </label>
               <textarea
@@ -261,7 +320,8 @@ export default function VolunteerPage() {
           {/* التذييل */}
           <div className="bg-gray-100 p-6 text-center border-t border-gray-200">
             <p className="text-[#31124b]">
-              شكراً لاهتمامك بالانضمام إلينا! سنقوم بمراجعة طلبك والتواصل معك في أقرب وقت ممكن.
+              شكراً لاهتمامك بالانضمام إلينا! سنقوم بمراجعة طلبك والتواصل معك في
+              أقرب وقت ممكن.
             </p>
           </div>
         </div>
