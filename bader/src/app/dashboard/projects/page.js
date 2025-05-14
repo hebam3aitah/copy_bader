@@ -1,90 +1,94 @@
-// ✅ صفحة إدارة المشاريع للأدمن مع خيار تعديل الحالة
 'use client';
-
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Link from 'next/link';
+import { FiEdit, FiTrash2, FiLoader } from 'react-icons/fi';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
+import { toast } from 'react-toastify';
 
-export default function AdminProjectsDashboard() {
+export default function AdminProjectsPage() {
   const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get('/api/projects');
+      setLoading(true);
+      const res = await axios.get('/api/Admin/projects', {
+        params: statusFilter !== 'all' ? { status: statusFilter } : {},
+      });
       setProjects(res.data);
     } catch (err) {
-      console.error('فشل تحميل المشاريع:', err);
+      console.error('Failed to load projects', err);
+      toast.error('فشل في تحميل المشاريع');
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProjects();
+  }, [statusFilter]);
 
   const handleDelete = async (id) => {
-    const confirmDelete = confirm('هل أنت متأكد من حذف هذا المشروع؟');
-    if (!confirmDelete) return;
-
+    if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
     try {
-      await axios.delete(`/api/projects/${id}`);
-      setProjects(projects.filter((p) => p._id !== id));
+      await axios.delete(`/api/Admin/projects/${id}`);
+      toast.success('تم حذف المشروع بنجاح');
+      fetchProjects();
     } catch (err) {
-      console.error('فشل في حذف المشروع:', err);
-    }
-  };
-
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      await axios.patch(`/api/projects/${id}`, { status: newStatus });
-      setProjects((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, status: newStatus } : p))
-      );
-    } catch (err) {
-      console.error('فشل في تعديل الحالة:', err);
+      console.error(err);
+      toast.error('فشل في حذف المشروع');
     }
   };
 
   return (
     <div className="p-6" dir="rtl">
-      <h1 className="text-3xl font-bold text-[#31124b] mb-6">إدارة المشاريع</h1>
+      <h2 className="text-2xl font-bold mb-6">إدارة المشاريع</h2>
 
-      {projects.length === 0 ? (
-        <p className="text-gray-500">لا توجد مشاريع حالياً.</p>
+      <div className="mb-4">
+        <label className="mr-2 font-medium">فلترة حسب الحالة:</label>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border px-4 py-2 rounded"
+        >
+          <option value="all">كل الحالات</option>
+          <option value="pending">قيد الانتظار</option>
+          <option value="in-progress">قيد التنفيذ</option>
+          <option value="completed">مكتمل</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <FiLoader className="animate-spin text-3xl" />
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <div key={project._id} className="bg-white rounded-lg shadow p-4 space-y-2">
-              <h2 className="text-xl font-bold text-[#31124b]">{project.title}</h2>
-              <p className="text-sm text-gray-700">{project.description}</p>
-              <p className="text-sm">📍 الموقع: {project.location}</p>
-              <p className="text-sm">📂 التصنيف: {project.category?.name || 'غير محدد'}</p>
-              <p className="text-sm">⚠️ الأولوية: {project.priority}</p>
-
-              {/* ✅ تغيير الحالة */}
-              <div className="text-sm">
-                🛠 الحالة:
-                <select
-                  value={project.status}
-                  onChange={(e) => handleStatusChange(project._id, e.target.value)}
-                  className="ml-2 border px-2 py-1 rounded"
-                >
-                  <option value="pending">قيد الانتظار</option>
-                  <option value="in-progress">قيد التنفيذ</option>
-                  <option value="completed">مكتمل</option>
-                </select>
-              </div>
-
-              <div className="flex gap-2 mt-3">
-                <Link
-                  href={`/dashboard/projects/${project._id}/edit`}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
-                >
+            <div key={project._id} className="border rounded-lg p-4 shadow bg-white">
+              <img
+                src={project.mainImage || '/placeholder.png'}
+                alt={project.title}
+                className="w-full h-40 object-cover rounded mb-4"
+              />
+              <h3 className="text-lg font-semibold mb-2">{project.title}</h3>
+              <p className="text-sm text-gray-600 mb-1">الحالة: {project.status}</p>
+              <p className="text-sm text-gray-500 mb-1">النسبة: {project.progress || 0}%</p>
+              <p className="text-sm text-gray-500 mb-2">
+                تاريخ الإضافة: {format(new Date(project.createdAt), 'dd MMMM yyyy', { locale: ar })}
+              </p>
+              <div className="flex gap-3 mt-2">
+                <button className="text-blue-600 hover:underline flex items-center gap-1">
+                  <FiEdit />
                   تعديل
-                </Link>
+                </button>
                 <button
+                  className="text-red-600 hover:underline flex items-center gap-1"
                   onClick={() => handleDelete(project._id)}
-                  className="bg-red-600 hover:bg-red-800 text-white px-3 py-1 rounded text-sm"
                 >
+                  <FiTrash2 />
                   حذف
                 </button>
               </div>
