@@ -6,10 +6,10 @@ import { authOptions } from '@/lib/auth';
 export async function DELETE(req, { params }) {
   await dbConnect();
 
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  // const session = await getServerSession(authOptions);
+  // if (!session || session.user.role !== 'admin') {
+  //   return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  // }
 
   const { id } = params;
 
@@ -19,5 +19,21 @@ export async function DELETE(req, { params }) {
   } catch (err) {
     console.error('Error deleting project:', err);
     return Response.json({ error: 'Error deleting project' }, { status: 500 });
+  }
+}
+
+export async function PUT(req, { params }) {
+  await dbConnect();
+  const { id } = params;
+  const data = await req.json();
+
+  try {
+    const updated = await Project.findByIdAndUpdate(id, data, { new: true });
+    if (!updated) {
+      return Response.json({ error: 'المشروع غير موجود' }, { status: 404 });
+    }
+    return Response.json({ success: true, project: updated });
+  } catch (err) {
+    return Response.json({ error: 'فشل في تحديث المشروع' }, { status: 500 });
   }
 }

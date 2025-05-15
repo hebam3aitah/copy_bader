@@ -23,19 +23,55 @@ export default function IssueEditPage() {
     severityLevel: "",
     donationTarget: 0,
     volunteerCount: 0,
+    category: null,
   });
 
   const handleConvertToProject = async () => {
+    if (!formData.category) {
+      toast.warning("⚠️ يجب اختيار نوع المشكلة قبل التحويل إلى مشروع");
+      return;
+    }
+
     try {
+      console.log("محاولة تحديث التصنيف:", {
+        category: formData.category,
+        problemType: formData.problemType
+      });
+      
+      const updateResponse = await axios.put(`/api/issues/${id}`, {
+        ...formData,
+        category: formData.category,
+        images: issue.images,
+      });
+      
+      console.log("تم تحديث البلاغ:", updateResponse.data);
+      toast.info("تم تحديث البلاغ بنجاح، جاري التحويل إلى مشروع...");
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const refreshedIssue = await axios.get(`/api/issues/${id}`);
+      console.log("البلاغ بعد التحديث:", refreshedIssue.data);
+      
       const res = await axios.post("/api/Admin/convert-to-project", {
         issueId: id,
+      }, {
+        headers: {
+          "Content-Type": "application/json"
+        }
       });
 
       toast.success("✅ تم تحويل البلاغ إلى مشروع بنجاح");
       router.push(`/dashboard/projects/${res.data.projectId}`);
     } catch (error) {
       console.error("تحويل فشل:", error);
-      toast.error("❌ فشل في تحويل البلاغ إلى مشروع");
+      console.log("تفاصيل الخطأ:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        formData: formData
+      });
+      
+      toast.error(`❌ فشل في تحويل البلاغ: ${error.response?.data?.error || error.message}`);
     }
   };
 
@@ -52,6 +88,8 @@ export default function IssueEditPage() {
       const data = res.data;
       setIssue(data);
 
+      const categoryId = data.category ? data.category._id || data.category : null;
+
       setFormData({
         problemType: data.problemType || "",
         description: data.description || "",
@@ -59,6 +97,7 @@ export default function IssueEditPage() {
         severityLevel: data.severityLevel || "",
         donationTarget: data.donationTarget || 0,
         volunteerCount: data.volunteerCount || 0,
+        category: categoryId,
       });
     } catch (err) {
       toast.error("فشل في جلب بيانات البلاغ");
@@ -77,7 +116,26 @@ export default function IssueEditPage() {
   };
 
   const handleChange = (e) => {
+    if (e.target.name === 'problemType') {
+      const selectedCategory = categories.find(cat => cat.name === e.target.value);
+      console.log("Categoría seleccionada:", selectedCategory);
+      
+      setFormData({ 
+        ...formData, 
+        [e.target.name]: e.target.value,
+        category: selectedCategory ? selectedCategory._id : null
+      });
+      
+      if (selectedCategory && issue) {
+        setIssue({
+          ...issue,
+          problemType: e.target.value,
+          category: selectedCategory._id
+        });
+      }
+    } else {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const handleRemoveImage = (url) => {
@@ -198,6 +256,11 @@ export default function IssueEditPage() {
                       <option key={cat._id} value={cat.name}>{cat.name}</option>
                     ))}
                   </select>
+                  {formData.category ? (
+                    <p className="text-xs text-green-600 mt-1">✓ تم تحديد التصنيف</p>
+                  ) : (
+                    <p className="text-xs text-red-500 mt-1">يرجى اختيار نوع المشكلة</p>
+                  )}
                 </div>
 
                 <div>

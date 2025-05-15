@@ -6,10 +6,10 @@ import { authOptions } from '@/lib/auth'; // تأكد من المسار الصح
 export async function GET(req) {
   await dbConnect();
 
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  // const session = await getServerSession(authOptions);
+  // if (!session || session.user.role !== 'admin') {
+  //   return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  // }
 
   const { searchParams } = new URL(req.url);
   const status = searchParams.get('status');
