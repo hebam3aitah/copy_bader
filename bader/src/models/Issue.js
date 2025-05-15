@@ -20,6 +20,9 @@ const IssueSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected', 'converted-to-project'],
     default: 'pending',
   },
+  donationTarget: { type: Number, default: 0 },
+volunteerCount: { type: Number, default: 0 },
+
   reviewedByAdmin: {
     type: Boolean,
     default: false,

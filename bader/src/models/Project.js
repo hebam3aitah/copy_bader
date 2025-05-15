@@ -21,6 +21,9 @@ const projectSchema = new mongoose.Schema({
     }
   ],
   issue: { type: mongoose.Schema.Types.ObjectId, ref: 'Issue' },
+  donationTarget: { type: Number, default: 0 },
+volunteerCount: { type: Number, default: 0 },
+createdFromIssue: { type: mongoose.Schema.Types.ObjectId, ref: 'Issue' },
   lastStatusUpdate: { type: Date, default: Date.now },
   donations: { type: Number, default: 0 },
   volunteers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
