@@ -5,7 +5,6 @@ const organizationSchema = new mongoose.Schema({
   issues: [{ type: mongoose.Schema.Types.ObjectId, ref: "Issue" }],
   location: { type: String },
   totalDonations: { type: Number, default: 0 },
-  organization: { type: mongoose.Schema.Types.ObjectId, ref: "Organization" },
   email: { type: String, required: true },
   contactPerson: { type: String }, // اسم مسؤول الجهة
   phone: { type: String },
