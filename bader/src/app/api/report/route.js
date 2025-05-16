@@ -10,7 +10,7 @@ export async function POST(req) {
     const body = await req.json();
     console.log("📥 Received data:", body);
 
-    // ✅ Joi validation
+    // ✅ Joi validation schema
     const schema = Joi.object({
       problemType: Joi.string().required(),
       location: Joi.string().required(),
@@ -21,6 +21,7 @@ export async function POST(req) {
       phone: Joi.string()
         .pattern(/^[\d+]{8,15}$/)
         .required(),
+      reportedBy: Joi.string().hex().length(24),
     });
 
     const { error } = schema.validate(body, { abortEarly: false });
@@ -45,6 +46,7 @@ export async function POST(req) {
       images,
       reporterName,
       phone,
+      reportedBy,
     } = body;
 
     const issue = await Issue.create({
@@ -52,14 +54,14 @@ export async function POST(req) {
       location,
       severityLevel,
       description,
-      images: (images || []).map((url) => ({ url })), // ✅ تصحيح هنا
+      images: (images || []).map((url) => ({ url })),
       reporterName,
       phone,
+      reportedBy,
     });
 
     console.log("✅ Issue created:", issue);
 
-    // ✅ إرسال إشعار إلى الأدمن (بسيط)
     await sendAdminNotification({
       title: "🔔 بلاغ جديد",
       message: `${reporterName} أبلغ عن: ${problemType}`,

@@ -46,6 +46,7 @@ export default function ReportProblemPage() {
     images: [],
     reporterName: "",
     phone: "",
+    reportedBy: "",
   });
   const [userData, setUserData] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -62,6 +63,7 @@ export default function ReportProblemPage() {
           ...prev,
           reporterName: user.name || "",
           phone: user.phone || "",
+          reportedBy: user._id || "",
         }));
       } catch (err) {
         console.warn("⚠️ لم يتم تسجيل الدخول");
@@ -175,14 +177,11 @@ export default function ReportProblemPage() {
       </Head>
       <main dir="rtl" className="min-h-screen py-12 relative">
         {/* الخلفية */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-          
-        </div>
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0"></div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-
               <div className="inline-block p-3 rounded-full bg-[#fa9e1b] bg-opacity-10 mb-4">
                 <AlertTriangle size={32} className="text-amber-50" />
               </div>
@@ -248,25 +247,23 @@ export default function ReportProblemPage() {
               </div>
             ) : (
               <div ref={formRef}>
-                  <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden ">
-          {/* رأس النموذج */}
-          <div
-            className="bg-white shadow-lg overflow-hidden"
-            dir="rtl"
-          >
-            <div className="bg-gradient-to-r from-[#31124b] to-[#411866] py-6 px-8 rounded-xl shadow-xl overflow-hidden">
-              <h2 className="text-2xl font-bold text-white">
-                نموذج الإبلاغ عن مشكلة{" "}
-              </h2>
-              <p className="text-[#fa9e1b] text-opacity-90 mt-5  ">
-                الحقول المطلوبة مميزة بعلامة (*)
-              </p>
-            </div>
-          </div> 
-          </div>
-                <form onSubmit={handleSubmit} className="p-8 space-y-6  bg-gray-50  rounded-xl shadow-xl overflow-hidden">
-         
-
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden ">
+                  {/* رأس النموذج */}
+                  <div className="bg-white shadow-lg overflow-hidden" dir="rtl">
+                    <div className="bg-gradient-to-r from-[#31124b] to-[#411866] py-6 px-8 rounded-xl shadow-xl overflow-hidden">
+                      <h2 className="text-2xl font-bold text-white">
+                        نموذج الإبلاغ عن مشكلة{" "}
+                      </h2>
+                      <p className="text-[#fa9e1b] text-opacity-90 mt-5  ">
+                        الحقول المطلوبة مميزة بعلامة (*)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <form
+                  onSubmit={handleSubmit}
+                  className="p-8 space-y-6  bg-gray-50  rounded-xl shadow-xl overflow-hidden"
+                >
                   {/* نوع المشكلة */}
                   <div className="mb-6">
                     <label className="block text-gray-700 font-semibold mb-2 text-right">

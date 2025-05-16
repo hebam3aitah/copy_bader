@@ -255,7 +255,7 @@ const ProjectCard = ({
             <div className="flex gap-3">
               {showVolunteer && (
                 <Link
-                  href={`/volunteer-opportunities?project_id=${id}`}
+                  href={`/volunteer?project_id=${id}`}
                   className="bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 py-2.5 px-4 rounded-xl text-center transition-all duration-300 w-full text-sm font-medium flex items-center justify-center gap-2 border border-green-200"
                 >
                   <FiUsers className="text-lg" />
