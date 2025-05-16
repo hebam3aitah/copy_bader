@@ -2,9 +2,12 @@
 
 import { useState } from 'react';
 import Head from 'next/head';
+import { useSearchParams } from 'next/navigation';
 import { FaHandHoldingHeart, FaMoneyBillWave, FaUser, FaEnvelope, FaPhone, FaCreditCard, FaCalendarAlt, FaLock } from 'react-icons/fa';
 
-export default function DonatePage({ projectId = null, organizationId = null }) {
+export default function DonatePage({ organizationId = null }) {
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,12 +35,24 @@ export default function DonatePage({ projectId = null, organizationId = null }) 
     e.preventDefault();
 
     try {
-      // 👇 جلب بيانات المستخدم الحالي
+      // جلب بيانات المستخدم الحالي
       const userRes = await fetch('/api/current-user');
       const userData = await userRes.json();
       const userId = userData._id;
 
-      // 👇 إرسال البيانات إلى API التبرعات
+      // جمل الطباعة للتشخيص
+      console.log('amount:', formData.amount);
+      console.log('userId:', userId);
+      console.log('projectId:', projectId);
+      console.log('userData:', userData);
+
+      // تحقق من الحقول المطلوبة
+      if (!formData.amount || !userId || !projectId) {
+        alert('يرجى تعبئة جميع الحقول المطلوبة');
+        return;
+      }
+
+      // إرسال البيانات إلى API التبرعات
       const res = await fetch('/api/donations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
