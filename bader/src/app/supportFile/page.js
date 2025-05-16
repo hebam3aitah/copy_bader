@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import {
-FaHandHoldingHeart
+ FaBuilding 
 } from "react-icons/fa";
 
 export default function SupportPage() {
@@ -139,7 +139,7 @@ export default function SupportPage() {
        
         <div className="container mx-auto px-4 text-center relative z-10">
            <div className="inline-flex items-center justify-center p-4 bg-[#fa9e1b] rounded-full mb-4">
-                      <FaHandHoldingHeart className="text-white text-3xl" />
+                      < FaBuilding  className="text-white text-3xl" />
                     </div>
           <h1 className="text-5xl font-bold mb-4 text-[#31124b]">كن داعماً</h1>
           <p className="mt-2 text-xl text-[#31124b] font-medium">

@@ -4,7 +4,6 @@ import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 
-import { motion } from "framer-motion";
 import {
   Camera,
   AlertTriangle,
@@ -147,8 +146,6 @@ export default function ReportProblemPage() {
     }
   }, [submitted]);
 
-  // if (!formData.reporterName?.trim())
-  //   return <p className="text-center mt-10 text-red-500 ">🚫 يجب تسجيل الدخول للإبلاغ عن مشكلة.</p>;
   if (!formData.reporterName?.trim()) {
     return (
       <main className="min-sm flex flex-col items-center justify-center text-center py-24 px-4 bg-white ">

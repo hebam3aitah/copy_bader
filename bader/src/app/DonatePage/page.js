@@ -2,9 +2,12 @@
 
 import { useState } from 'react';
 import Head from 'next/head';
+import { useSearchParams } from 'next/navigation';
 import { FaHandHoldingHeart, FaMoneyBillWave, FaUser, FaEnvelope, FaPhone, FaCreditCard, FaCalendarAlt, FaLock } from 'react-icons/fa';
 
-export default function DonatePage({ projectId = null, organizationId = null }) {
+export default function DonatePage({ organizationId = null }) {
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,12 +35,24 @@ export default function DonatePage({ projectId = null, organizationId = null }) 
     e.preventDefault();
 
     try {
-      // 👇 جلب بيانات المستخدم الحالي
+      // جلب بيانات المستخدم الحالي
       const userRes = await fetch('/api/current-user');
       const userData = await userRes.json();
       const userId = userData._id;
 
-      // 👇 إرسال البيانات إلى API التبرعات
+      // جمل الطباعة للتشخيص
+      console.log('amount:', formData.amount);
+      console.log('userId:', userId);
+      console.log('projectId:', projectId);
+      console.log('userData:', userData);
+
+      // تحقق من الحقول المطلوبة
+      if (!formData.amount || !userId || !projectId) {
+        alert('يرجى تعبئة جميع الحقول المطلوبة');
+        return;
+      }
+
+      // إرسال البيانات إلى API التبرعات
       const res = await fetch('/api/donations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,14 +104,26 @@ export default function DonatePage({ projectId = null, organizationId = null }) 
       </Head>
 
       <main  className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* رأس النموذج */}
-          <div className="bg-[#31124b] p-8 text-center">
+
+          
+         {/* رأس النموذج */}
+          <div className=" p-8 text-center">
             <div className="inline-flex items-center justify-center p-4 bg-[#fa9e1b] rounded-full mb-4">
               <FaHandHoldingHeart className="text-white text-3xl" />
             </div>
+            <h1 className="text-3xl font-bold text-[#31124b]">تبرع الآن</h1>
+           <p className="mt-7 text-xl text-[#31124b]font-medium">
+              ساهم في دعم مبادراتنا وكن شريكاً في التغيير
+
+            </p>
+          </div>
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+          
+          {/* رأس النموذج */}
+          <div className="bg-gradient-to-r from-[#31124b] to-[#411866] p-8 ">
+          
             <h1 className="text-3xl font-bold text-white">تبرع الآن</h1>
-            <p className="text-[#fa9e1b] mt-2">ساهم في دعم مبادراتنا وكن شريكاً في التغيير</p>
+            <p className="text-[#fa9e1b] mt-5">ساهم في دعم مبادراتنا وكن شريكاً في التغيير</p>
           </div>
 
           {/* مؤشر الخطوات */}
@@ -388,21 +415,18 @@ export default function DonatePage({ projectId = null, organizationId = null }) 
                     <h3 className="text-lg font-bold text-[#31124b] mb-3 text-right">معلومات الحساب البنكي</h3>
                     <ul className="space-y-2 text-right">
                       <li className="flex justify-end items-center gap-2">
-                        <span>بنك ABC</span>
-                        <strong className="text-[#31124b]">اسم البنك:</strong>
+                        <span>بنك الاتحاد</span>
+                        <strong className="text-[#31124b]">: اسم البنك</strong>
                       </li>
                       <li className="flex justify-end items-center gap-2">
-                        <span>مؤسسة الخير للتنمية المجتمعية</span>
-                        <strong className="text-[#31124b]">اسم الحساب:</strong>
+                        <span>منصه بادر   </span>
+                        <strong className="text-[#31124b]">: اسم الحساب</strong>
                       </li>
                       <li className="flex justify-end items-center gap-2">
-                        <span dir="ltr">JO12 3456 7890 1234 5678 9012 3456</span>
-                        <strong className="text-[#31124b]">رقم الحساب (IBAN):</strong>
+                        <span dir="ltr">BADIR993</span>
+                        <strong className="text-[#31124b]">: رقم الحساب (IBAN)</strong>
                       </li>
-                      <li className="flex justify-end items-center gap-2">
-                        <span>يرجى ذكر اسمك ورقم هاتفك في تفاصيل التحويل</span>
-                        <strong className="text-[#31124b]">ملاحظة:</strong>
-                      </li>
+                      
                     </ul>
                   </div>
                 )}

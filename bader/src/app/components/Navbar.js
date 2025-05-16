@@ -10,7 +10,7 @@ import NotificationsMenu from "./NotificationsMenu";
 const navItems = [
   { title: "الرئيسية", href: "/" },
   { title: "المشاريع", href: "/projects" },
-  { title: "الفرص التطوعية", href: "/volunteer-opportunities" },
+  { title: "الفرص التطوعية", href: "/volunteer" },
   { title: "الجهات الداعمة", href: "/supportFile" },
   { title: "الإبلاغ عن مشكلة", href: "/report-issue" },
   { title: "من نحن", href: "/about" },

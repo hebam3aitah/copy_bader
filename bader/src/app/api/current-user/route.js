@@ -50,7 +50,10 @@ export async function GET(req) {
 
   // ✅ إذا سجل من Google (NextAuth)
   if (token?.email && token?.name) {
+    // جلب المستخدم من قاعدة البيانات للحصول على _id
+    const user = await User.findOne({ email: token.email });
     return Response.json({
+      _id: user?._id, // أضف _id إذا كان user موجود
       name: token.name,
       email: token.email,
       phone: token.phone || 'غير متوفر',
@@ -73,6 +76,7 @@ export async function GET(req) {
     // console.log("🔥 token:", req.cookies.get('token')?.value);
 
     return Response.json({
+      _id: user._id, // أضف _id هنا أيضًا
       name: user.name,
       email: user.email,
       phone: user.phone || '',

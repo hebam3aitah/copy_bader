@@ -4,6 +4,7 @@
 import Head from 'next/head';
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { FaUsers } from "react-icons/fa";
 
 export default function About() {
   const [activeTab, setActiveTab] = useState('vision');
@@ -88,19 +89,19 @@ export default function About() {
           animate="visible"
           variants={fadeInUp}
           className="text-center mb-24 relative"
-        >
+        >  <div className="text-center ">
+            <div className=" inline-block p-3 rounded-full bg-[#fa9e1b] bg-opacity-10 mb-4">
+                <FaUsers size={32} className="text-amber-50" />
+              </div>
+</div>
           <h1 className="text-5xl font-bold text-[#31124b] mb-4 relative inline-block">
             من نحن
-            <span className="absolute -bottom-2 left-0 right-0 h-1 bg-[#fa9e1b] transform origin-left"></span>
           </h1>
           
-          <p className="mt-8 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            مبادرة <span className="text-[#31124b] font-bold relative">
-              بادر
-              {/* <span className="absolute bottom-0 left-0 right-0 h-1 bg-[#fa9e1b]"></span> */}
-            </span> هي مشروع تطوعي يهدف إلى إصلاح مشاكل الحي وتحسين جودة الحياة للجميع
-          </p>
           
+           <p className="mt-7 text-xl text-[#31124b]font-medium">
+مبادرة بادر هي مشروع تطوعي يهدف إلى إصلاح مشاكل الحي وتحسين جودة الحياة للجميع
+   </p>
           {/* شكل زخرفي */}
           <motion.div 
             animate={floatingAnimation}
