@@ -1,32 +1,46 @@
+"use client"; // 👈 لازم يكون أول سطر
 
-import '../styles/globals.css';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import { Inter } from 'next/font/google';
+import "../styles/globals.css";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import { Inter } from "next/font/google";
 import SessionWrapper from "@/app/components/SessionWrapper";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
+import { usePathname } from "next/navigation"; // ✅ هاد hook لازم بملف client
 
-const ibmPlexSansArabic = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-ibm-plex-sans-arabic',
+const interFont = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-sans-arabic",
 });
 
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+
+  const shouldHideNavbar = () =>
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/dashboard");
+
+  const shouldHideFooter = () =>
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/dashboard");
+
   return (
-    <html lang="ar">
+    <html lang="ar" className={interFont.variable}>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className={`${ibmPlexSansArabic.variable} font-body`}>
+      <body className="font-body">
         <SessionWrapper>
-          <Toaster position="top-right" reverseOrder={false} /> {/* ✅ تم نقله لمكانه الصحيح */}
-          <Navbar />
+          <Toaster position="top-right" reverseOrder={false} />
+          {!shouldHideNavbar() && <Navbar />}
           <main>{children}</main>
-          <Footer />
+          {!shouldHideFooter() && <Footer />}
         </SessionWrapper>
       </body>
     </html>
