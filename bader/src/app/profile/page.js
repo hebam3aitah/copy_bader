@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
+import CompletedVolunteerActivity from "@/app/components/CompletedVolunteerActivity";
 import {
   FaEdit,
   FaMapMarkerAlt,
   FaPhone,
   FaUser,
   FaClipboardCheck,
-  FaRegClock,
   FaExclamationTriangle,
   FaMedal,
   FaBell,
@@ -18,7 +18,6 @@ import {
   FaClock,
   FaCamera,
   FaChartLine,
-  FaAward,
   FaInfoCircle,
 } from "react-icons/fa";
 
@@ -529,16 +528,6 @@ export default function UserProfile() {
               <FaClipboardCheck className="ml-2" /> المشاريع التطوعية
             </button>
             <button
-              onClick={() => setActiveTab("available")}
-              className={`px-6 py-4 flex items-center font-medium text-sm transition-colors ${
-                activeTab === "available"
-                  ? "border-b-2 border-[#fa9e1b] text-[#31124b]"
-                  : "text-gray-500 hover:text-[#31124b]"
-              }`}
-            >
-              <FaRegClock className="ml-2" /> فرص التطوع المتاحة
-            </button>
-            <button
               onClick={() => setActiveTab("issues")}
               className={`px-6 py-4 flex items-center font-medium text-sm transition-colors ${
                 activeTab === "issues"
@@ -558,83 +547,6 @@ export default function UserProfile() {
                 initial="hidden"
                 animate="visible"
               >
-                <div className="mb-8">
-                  <div className="flex items-center mb-6">
-                    <FaAward className="text-[#fa9e1b] text-xl ml-3" />
-                    <h2 className="text-xl font-bold text-[#31124b]">
-                      الشارات والإنجازات
-                    </h2>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {badges.map((badge, index) => (
-                      <motion.div
-                        key={badge.id}
-                        variants={itemVariants}
-                        className={`rounded-xl p-5 transition-all ${
-                          badge.achieved
-                            ? "bg-gradient-to-r from-[#31124b]/10 to-[#fa9e1b]/10 border border-[#fa9e1b]/30"
-                            : "bg-gray-50 border border-gray-200"
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <div
-                            className={`p-3 rounded-full ${
-                              badge.achieved
-                                ? "bg-gradient-to-br from-[#fa9e1b] to-[#f8b957] text-white"
-                                : "bg-gray-200 text-gray-500"
-                            } ml-4 shadow-md`}
-                          >
-                            {badge.icon}
-                          </div>
-                          <div>
-                            <h3
-                              className={`font-bold ${
-                                badge.achieved
-                                  ? "text-[#31124b]"
-                                  : "text-gray-600"
-                              }`}
-                            >
-                              {badge.name}
-                              {badge.achieved && (
-                                <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded mr-2">
-                                  مكتمل
-                                </span>
-                              )}
-                            </h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {badge.description}
-                            </p>
-
-                            {!badge.achieved && badge.progress && (
-                              <div className="mt-3">
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className="bg-gradient-to-r from-[#fa9e1b] to-[#f8b957] h-2 rounded-full"
-                                    style={{
-                                      width: `${
-                                        (badge.current / badge.progress) * 100
-                                      }%`,
-                                    }}
-                                  ></div>
-                                </div>
-                                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                  <span>
-                                    المتبقي: {badge.progress - badge.current}
-                                  </span>
-                                  <span>
-                                    {badge.current}/{badge.progress}
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
                 <div>
                   <div className="flex items-center mb-6">
                     <FaChartLine className="text-[#fa9e1b] text-xl ml-3" />
@@ -649,12 +561,9 @@ export default function UserProfile() {
                       variants={itemVariants}
                       className="bg-white rounded-xl border shadow-sm p-5 h-64"
                     >
-                      <h3 className="text-lg font-medium text-[#31124b] mb-3">
-                        نشاط التطوع الشهري
-                      </h3>
-                      <div className="h-full flex items-center justify-center text-gray-400">
-                        رسم بياني للنشاط التطوعي
-                      </div>
+                      <CompletedVolunteerActivity
+                        completedProjects={completedProjects}
+                      />
                     </motion.div>
 
                     {/* Achievements Overview */}
@@ -794,85 +703,6 @@ export default function UserProfile() {
                     <button className="bg-[#fa9e1b] text-white px-4 py-2 rounded-lg hover:bg-[#e89018] transition-colors">
                       استكشف فرص التطوع
                     </button>
-                  </div>
-                )}
-              </motion.div>
-            )}
-
-            {/* Available Projects Tab */}
-            {activeTab === "available" && (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <FaRegClock className="text-[#fa9e1b] text-xl ml-3" />
-                    <h2 className="text-xl font-bold text-[#31124b]">
-                      مشاريع متاحة للتطوع
-                    </h2>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="text-xs bg-[#31124b]/10 text-[#31124b] px-3 py-1 rounded-full">
-                      عرض الكل
-                    </button>
-                    <button className="text-xs bg-[#fa9e1b]/10 text-[#fa9e1b] px-3 py-1 rounded-full">
-                      الأقرب إليك
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {availableProjects.map((project, index) => (
-                    <motion.div
-                      key={project.id}
-                      variants={itemVariants}
-                      className="bg-white border rounded-xl overflow-hidden hover:shadow-md transition-all"
-                    >
-                      <div className="border-b bg-gray-50 px-4 py-3">
-                        <div className="flex justify-between items-center">
-                          <h3 className="font-bold text-[#31124b]">
-                            {project.title}
-                          </h3>
-                          <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">
-                            {project.estimatedHours} ساعات
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <div className="flex items-center text-gray-600 text-sm mb-3">
-                          <FaClock className="ml-2 text-[#fa9e1b]" />
-                          <span>التاريخ: {project.date}</span>
-                        </div>
-
-                        <div className="flex items-center text-gray-600 text-sm mb-4">
-                          <FaMapMarkerAlt className="ml-2 text-[#fa9e1b]" />
-                          <span>الموقع: {project.address || "غير محدد"}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between mt-4">
-                          <button className="text-[#31124b] hover:text-[#fa9e1b] text-sm transition-colors">
-                            عرض التفاصيل
-                          </button>
-                          <button className="bg-[#fa9e1b] text-white px-4 py-2 rounded-lg hover:bg-[#e89018] transition-colors text-sm">
-                            تطوع الآن
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {availableProjects.length === 0 && (
-                  <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                    <FaRegClock className="text-gray-300 text-4xl mx-auto mb-3" />
-                    <h3 className="text-gray-500 font-medium mb-2">
-                      لا توجد مشاريع متاحة حاليًا
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      ترقب مشاريع جديدة قريبًا
-                    </p>
                   </div>
                 )}
               </motion.div>
