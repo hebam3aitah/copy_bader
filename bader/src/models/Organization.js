@@ -1,17 +1,23 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const organizationSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  issues: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Issue' }],
+  issues: [{ type: mongoose.Schema.Types.ObjectId, ref: "Issue" }],
   location: { type: String },
   totalDonations: { type: Number, default: 0 },
-  organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
-  email: { type: String, required: true, unique: true },
+  organization: { type: mongoose.Schema.Types.ObjectId, ref: "Organization" },
+  email: { type: String, required: true },
   contactPerson: { type: String }, // اسم مسؤول الجهة
   phone: { type: String },
+  supportType: { type: String, required: true },
+  message: { type: String },
+  images: [{
+    url: { type: String },
+    uploadedAt: { type: Date, default: Date.now }
+  }],
+   category: { type: String, enum: ["companies", "governmental", "ngos" ], default: "ngos" },
   registeredAt: { type: Date, default: Date.now },
   approved: { type: Boolean, default: false }, // الأدمن يوافق عليهم
-  
 });
 
-module.exports = mongoose.model('Organization', organizationSchema);
+export default mongoose.models.Organization || mongoose.model("Organization", organizationSchema);

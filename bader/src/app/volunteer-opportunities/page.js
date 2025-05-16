@@ -102,11 +102,11 @@ export default function VolunteerPage() {
             className="bg-white rounded-lg shadow-lg overflow-hidden"
             dir="rtl"
           >
-            <div className="bg-gradient-to-r from-[#31124b] to-[#fa9e1b] py-6 px-8">
+            <div className="bg-gradient-to-r from-[#31124b] to-[#411866] py-6 px-8">
               <h2 className="text-2xl font-bold text-white">
                 نموذج التسجيل كمتطوع{" "}
               </h2>
-              <p className="text-white text-opacity-90 mt-5  ">
+              <p className="text-[#fa9e1b] text-opacity-90 mt-5  ">
                 الحقول المطلوبة مميزة بعلامة (*)
               </p>
             </div>

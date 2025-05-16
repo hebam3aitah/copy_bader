@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, CheckCircle, AlertCircle, HelpCircle, FileText, Shield, Mail } from 'lucide-react';
+import { FaBalanceScale } from "react-icons/fa";
+import Link from "next/link";
 
 export default function TermsOfServicePage() {
   const [expandedSection, setExpandedSection] = useState('general');
@@ -113,10 +115,15 @@ export default function TermsOfServicePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50 font-sans">
+    <div className="min-h-screen bg-gradient-to-br font-sans">
       {/* Header */}
       <header className="bg-gradient-to-r text-white py-12 px-4 ">
+        
         <div className="max-w-6xl mx-auto text-center">
+            <div className="inline-block p-3 rounded-full bg-[#fa9e1b] bg-opacity-10 mb-4">
+                <FaBalanceScale size={32} className="text-amber-50" />
+              </div>
+
           <h1 className="text-4xl font-bold mb-4 text-[#31124b]">شروط الخدمة</h1>
           <p className="text-xl max-w-3xl mx-auto text-[#31124b] mt-5 ">
             الشروط والأحكام التي تحكم استخدام منصة "بادر" التطوعية لإصلاح الحي
@@ -163,7 +170,7 @@ export default function TermsOfServicePage() {
                     }
                     <span className="text-xl font-medium">{category.title}</span>
                   </div>
-                  <div className={`${expandedSection === category.id ? 'bg-purple-800' : 'bg-purple-100'} p-2 rounded-full`}>
+                  <div className={`${expandedSection === category.id ? '' : 'bg-purple-100'} p-2 rounded-full`}>
                     {category.icon}
                   </div>
                 </button>
@@ -186,15 +193,19 @@ export default function TermsOfServicePage() {
         </section>
         
         {/* Agreement Section */}
-        <section className="bg-gradient-to-r from-[#31124b] to-purple-700 rounded-xl p-8 shadow-lg text-center mb-12">
+        <section className="bg-gradient-to-r from-[#31124b] to-[#31124b] rounded-xl p-8 shadow-lg text-center mb-12">
           <h3 className="text-2xl font-bold text-white mb-4">أتعهد بالالتزام بالشروط</h3>
           <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
             أقر بأنني قرأت وفهمت جميع الشروط والأحكام وأوافق على الالتزام بها في جميع تعاملاتي مع منصة "بادر" التطوعية.
           </p>
           <div className="mt-6">
-            <button className="px-8 py-3 bg-orange-400 hover:bg-orange-500 text-white rounded-md transition-colors duration-300 shadow-md font-medium text-lg">
+           
+               <Link
+              href="/report-issue"
+              className="bg-[#fa9e1b] text-[#31124b] hover:bg-[#fa9d1bad] px-8 py-4 rounded-lg transition-colors font-bold text-xl inline-block"
+            >
               أوافق على الشروط والأحكام
-            </button>
+            </Link>
           </div>
         </section>
         
@@ -205,8 +216,8 @@ export default function TermsOfServicePage() {
             إذا كان لديك أي أسئلة أو استفسارات حول شروط الخدمة، يرجى التواصل معنا عبر القنوات التالية:
           </p>
           <div className="flex items-center mb-4">
-            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center ml-3">
-              <Mail className="w-5 h-5 text-purple-800" />
+            <div className="w-10 h-10 rounded-full bg-orange-400 flex items-center justify-center ml-3">
+              <Mail className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="font-medium text-[#31124b]">البريد الإلكتروني</p>

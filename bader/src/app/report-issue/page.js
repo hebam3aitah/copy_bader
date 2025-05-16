@@ -1,24 +1,36 @@
+"use client";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import Head from "next/head";
+import { useRouter } from "next/navigation";
 
-'use client';
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import Head from 'next/head';
-import { useRouter } from 'next/navigation';
-
-import { motion } from 'framer-motion';
-import { Camera, AlertTriangle, MapPin, FileText, Phone, User } from 'lucide-react';
+import { motion } from "framer-motion";
+import {
+  Camera,
+  AlertTriangle,
+  MapPin,
+  FileText,
+  Phone,
+  User,
+} from "lucide-react";
 
 const uploadImageToCloudinary = async (file) => {
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+  formData.append("file", file);
+  formData.append(
+    "upload_preset",
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+  );
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-    method: 'POST',
-    body: formData,
-  });
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
 
-  if (!res.ok) throw new Error('فشل رفع الصورة');
+  if (!res.ok) throw new Error("فشل رفع الصورة");
   const data = await res.json();
   return data.secure_url;
 };
@@ -28,13 +40,13 @@ export default function ReportProblemPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    problemType: '',
-    location: '',
-    severityLevel: 'medium',
-    description: '',
+    problemType: "",
+    location: "",
+    severityLevel: "medium",
+    description: "",
     images: [],
-    reporterName: '',
-    phone: '',
+    reporterName: "",
+    phone: "",
   });
   const [userData, setUserData] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -44,16 +56,16 @@ export default function ReportProblemPage() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await axios.get('/api/current-user');
+        const res = await axios.get("/api/current-user");
         const user = res.data;
         setUserData(user);
         setFormData((prev) => ({
           ...prev,
-          reporterName: user.name || '',
-          phone: user.phone || '',
+          reporterName: user.name || "",
+          phone: user.phone || "",
         }));
       } catch (err) {
-        console.warn('⚠️ لم يتم تسجيل الدخول');
+        console.warn("⚠️ لم يتم تسجيل الدخول");
       }
     };
     getUser();
@@ -92,7 +104,7 @@ export default function ReportProblemPage() {
           images: [...prev.images, ...uploadedImages],
         }));
       } catch (error) {
-        console.error('❌ رفع الصور فشل:', error);
+        console.error("❌ رفع الصور فشل:", error);
       } finally {
         setIsUploading(false);
       }
@@ -100,13 +112,13 @@ export default function ReportProblemPage() {
   };
 
   const problemTypes = [
-    'مشاكل الطرق والرصيف',
-    'إنارة الشوارع',
-    'تراكم النفايات',
-    'مشاكل الصرف الصحي',
-    'حدائق ومساحات عامة',
-    'تلوث بيئي',
-    'أخرى',
+    "مشاكل الطرق والرصيف",
+    "إنارة الشوارع",
+    "تراكم النفايات",
+    "مشاكل الصرف الصحي",
+    "حدائق ومساحات عامة",
+    "تلوث بيئي",
+    "أخرى",
   ];
 
   const removeImage = (index) => {
@@ -119,38 +131,38 @@ export default function ReportProblemPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/report', formData);
+      const response = await axios.post("/api/report", formData);
       if (response.status === 201) {
         setSubmitted(true);
       }
     } catch (error) {
-      console.error('❌ فشل في إرسال البلاغ:', error);
+      console.error("❌ فشل في إرسال البلاغ:", error);
     }
   };
   const successRef = useRef(null);
-  
-useEffect(() => {
-  if (submitted && successRef.current) {
-    successRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
-  }
-}, [submitted]);
+
+  useEffect(() => {
+    if (submitted && successRef.current) {
+      successRef.current.scrollIntoView({ behavior: "auto", block: "start" });
+    }
+  }, [submitted]);
 
   // if (!formData.reporterName?.trim())
   //   return <p className="text-center mt-10 text-red-500 ">🚫 يجب تسجيل الدخول للإبلاغ عن مشكلة.</p>;
   if (!formData.reporterName?.trim()) {
     return (
-     
       <main className="min-sm flex flex-col items-center justify-center text-center py-24 px-4 bg-white ">
         <div className="bg-white shadow-xl rounded-xl p-8 border border-red-300 max-w-md w-full">
           <p className="text-red-600 text-lg mb-6 flex items-center justify-center gap-2">
-            <span className="text-xl">🚫</span> يجب تسجيل الدخول للإبلاغ عن مشكلة.
+            <span className="text-xl">🚫</span> يجب تسجيل الدخول للإبلاغ عن
+            مشكلة.
           </p>
           <button
-         onClick={() => router.push('/login')}
-         className="px-6 py-2 bg-[#fa9e1b] text-white rounded-md hover:bg-[#e38f10] transition"
-        >
-          الانتقال إلى صفحة تسجيل الدخول
-         </button>
+            onClick={() => router.push("/login")}
+            className="px-6 py-2 bg-[#fa9e1b] text-white rounded-md hover:bg-[#e38f10] transition"
+          >
+            الانتقال إلى صفحة تسجيل الدخول
+          </button>
         </div>
       </main>
     );
@@ -159,62 +171,77 @@ useEffect(() => {
     <>
       <Head>
         <title>الإبلاغ عن مشكلة</title>
-        <meta name="description" content="قم بالإبلاغ عن المشاكل في حيك ليتم إصلاحها" />
+        <meta
+          name="description"
+          content="قم بالإبلاغ عن المشاكل في حيك ليتم إصلاحها"
+        />
       </Head>
       <main dir="rtl" className="min-h-screen py-12 relative">
         {/* الخلفية */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-          <motion.div 
-            className="absolute w-32 h-32 rounded-full bg-[#fa9e1b] opacity-20 top-20 left-20"
-            animate={{ x: floating.x, y: floating.y }}
-            transition={{ duration: 2 }}
-          />
-          <motion.div 
-            className="absolute w-48 h-48 rounded-full bg-[#fa9e1b] opacity-5 bottom-40 right-10"
-            animate={{ x: -floating.x, y: -floating.y }}
-            transition={{ duration: 3 }}
-          />
-          <motion.div 
-            className="absolute w-24 h-24 rounded-full bg-[#31124b] opacity-20 top-40 right-40"
-            animate={{ x: -floating.y, y: floating.x }}
-            transition={{ duration: 4 }}
-          />
+          
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
+
               <div className="inline-block p-3 rounded-full bg-[#fa9e1b] bg-opacity-10 mb-4">
                 <AlertTriangle size={32} className="text-amber-50" />
               </div>
-              <h1 className="text-3xl font-extrabold text-[#31124b] mb-2">الإبلاغ عن مشكلة</h1>
-              <p className="text-[#31124b] mt-5 text-2xl">ساعدنا في تحسين الحي من خلال الإبلاغ عن المشاكل التي تواجهك</p>
+              <h1 className="text-3xl font-extrabold text-[#31124b] mb-2">
+                الإبلاغ عن مشكلة
+              </h1>
+              <p className="text-[#31124b] mt-5 text-2xl">
+                ساعدنا في تحسين الحي من خلال الإبلاغ عن المشاكل التي تواجهك
+              </p>
             </div>
 
             {submitted ? (
-              
-              <div  ref={successRef} className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+              <div
+                ref={successRef}
+                className="bg-green-50 border border-green-200 rounded-lg p-6 text-center"
+              >
                 <div className="inline-block p-3 rounded-full bg-green-100 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 text-green-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-green-700 mb-2">تم استلام بلاغك بنجاح!</h2>
-                <p className="text-green-600 mb-4">شكراً لك على المساهمة في تحسين الحي. سيتم مراجعة البلاغ والعمل على حل المشكلة في أقرب وقت ممكن.</p>
+                <h2 className="text-2xl font-bold text-green-700 mb-2">
+                  تم استلام بلاغك بنجاح!
+                </h2>
+                <p className="text-green-600 mb-4">
+                  شكراً لك على المساهمة في تحسين الحي. سيتم مراجعة البلاغ والعمل
+                  على حل المشكلة في أقرب وقت ممكن.
+                </p>
                 <button
                   onClick={() => {
                     setSubmitted(false);
                     setFormData({
-                      problemType: '',
-                      location: '',
-                      severityLevel: 'medium',
-                      description: '',
+                      problemType: "",
+                      location: "",
+                      severityLevel: "medium",
+                      description: "",
                       images: [],
-                      reporterName: userData?.name || '',
-                      phone: userData?.phone || '',
+                      reporterName: userData?.name || "",
+                      phone: userData?.phone || "",
                     });
                     setTimeout(() => {
-                      formRef.current?.scrollIntoView({ behavior: 'auto', block:'start' });
+                      formRef.current?.scrollIntoView({
+                        behavior: "auto",
+                        block: "start",
+                      });
                     }, 100);
                   }}
                   className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300"
@@ -224,14 +251,32 @@ useEffect(() => {
               </div>
             ) : (
               <div ref={formRef}>
-                                      <form onSubmit={handleSubmit} className="p-8">
-                   {/* نوع المشكلة */}
-                   <div className="mb-6">
-                     <label className="block text-gray-700 font-semibold mb-2 text-right">
-                     نوع المشكلة <span className="text-red-500">*</span>
+                  <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden ">
+          {/* رأس النموذج */}
+          <div
+            className="bg-white shadow-lg overflow-hidden"
+            dir="rtl"
+          >
+            <div className="bg-gradient-to-r from-[#31124b] to-[#411866] py-6 px-8 rounded-xl shadow-xl overflow-hidden">
+              <h2 className="text-2xl font-bold text-white">
+                نموذج الإبلاغ عن مشكلة{" "}
+              </h2>
+              <p className="text-[#fa9e1b] text-opacity-90 mt-5  ">
+                الحقول المطلوبة مميزة بعلامة (*)
+              </p>
+            </div>
+          </div> 
+          </div>
+                <form onSubmit={handleSubmit} className="p-8 space-y-6  bg-gray-50  rounded-xl shadow-xl overflow-hidden">
+         
+
+                  {/* نوع المشكلة */}
+                  <div className="mb-6">
+                    <label className="block text-gray-700 font-semibold mb-2 text-right">
+                      نوع المشكلة <span className="text-red-500">*</span>
                     </label>
-                 <div className="relative">
-                     <select
+                    <div className="relative">
+                      <select
                         name="problemType"
                         value={formData.problemType}
                         onChange={handleChange}

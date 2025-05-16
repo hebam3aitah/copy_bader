@@ -67,7 +67,7 @@ export default function SponsorsPage() {
     },
     {
       id: 4,
-      name: "بلدية المدينة",
+      name: "بلدية الزرقاء ",
       logo: "/api/placeholder/80/80",
       description:
         "تسهيل الإجراءات وتوفير التصاريح اللازمة لمشاريع إصلاح الأحياء",
