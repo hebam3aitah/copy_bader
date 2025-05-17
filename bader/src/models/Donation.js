@@ -11,8 +11,7 @@ const donationSchema = new mongoose.Schema({
   // ✅ تبرع لمشروع محدد
   project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
 
-  // ✅ تبرع لجهة محددة
-  // organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
+  
 });
 
 module.exports = mongoose.model('Donation', donationSchema);

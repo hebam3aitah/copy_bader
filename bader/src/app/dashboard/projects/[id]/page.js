@@ -1,21 +1,30 @@
-import { connectDB } from '@/lib/mongoose';
-import Project from '@/models/Project';
+// app/dashboard/projects/[id]/page.js
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import axios from "axios";
 
-export async function GET(_, { params }) {
-  await connectDB();
-  const project = await Project.findById(params.id).populate('category', 'name');
-  return Response.json(project);
-}
+export default function ProjectDetailsPage() {
+  const { id } = useParams();
+  const [project, setProject] = useState(null);
 
-export async function PUT(req, { params }) {
-  await connectDB();
-  const data = await req.json();
-  const updated = await Project.findByIdAndUpdate(params.id, data, { new: true });
-  return Response.json(updated);
-}
+  useEffect(() => {
+    if (id) {
+      axios.get(`/api/projects/${id}`).then((res) => {
+        setProject(res.data);
+      });
+    }
+  }, [id]);
 
-export async function DELETE(_, { params }) {
-  await connectDB();
-  await Project.findByIdAndDelete(params.id);
-  return Response.json({ message: 'تم حذف المشروع' });
+  if (!project) return <div className="p-6">جاري تحميل البيانات...</div>;
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">تفاصيل المشروع</h1>
+      <p><strong>العنوان:</strong> {project.title}</p>
+      <p><strong>الوصف:</strong> {project.description}</p>
+      <p><strong>التصنيف:</strong> {project.category?.name}</p>
+      {/* يمكنك عرض بيانات إضافية هنا */}
+    </div>
+  );
 }

@@ -11,7 +11,6 @@ import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable"; // مهم جدًا!
 // import "@/fonts/ArabicFont-normal";
-import exportToPDF from "@/utils/exportToPDF-Cairo-Font";
 
 export default function AdminIssuesPage() {
   const [issues, setIssues] = useState([]);
@@ -550,8 +549,8 @@ export default function AdminIssuesPage() {
                     <th className="px-4 py-3 font-medium">الموقع</th>
                     <th className="px-4 py-3 font-medium">الخطورة</th>
                     <th className="px-4 py-3 font-medium">الصور</th>
-                    <th className="px-4 py-3 font-medium">صاحب البلاغ</th>
-                    <th className="px-4 py-3 font-medium">رقم الهاتف</th>
+                    {/* <th className="px-4 py-3 font-medium">صاحب البلاغ</th>
+                    <th className="px-4 py-3 font-medium">رقم الهاتف</th> */}
                     <th className="px-4 py-3 font-medium">تاريخ الإنشاء</th>
                     <th className="px-4 py-3 font-medium">الحالة</th>
                     <th className="px-4 py-3 font-medium">الإجراءات</th>
@@ -637,8 +636,8 @@ export default function AdminIssuesPage() {
                           </button>
                         )}
                       </td>
-                      <td className="px-4 py-3">{issue.reporterName}</td>
-                      <td className="px-4 py-3">{issue.phone}</td>
+                      {/* <td className="px-4 py-3">{issue.reporterName}</td>
+                      <td className="px-4 py-3">{issue.phone}</td> */}
                       <td className="px-4 py-3">
                         {formatDate(issue.createdAt)}
                       </td>

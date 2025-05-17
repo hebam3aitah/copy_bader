@@ -11,11 +11,7 @@ async function runSeeders() {
     console.log('🌱 Seeding Users...');
     await execAsync('node scripts/seedUsers.mjs');
 
-    console.log('🌱 Seeding Projects...');
-    await execAsync('node scripts/seedProjects.mjs');
-
-    console.log('🌱 Seeding Issues...');
-    await execAsync('node scripts/seedIssues.mjs');
+    
 
     console.log('🌱 Seeding Notifications...');
     await execAsync('node scripts/seedNotifications.mjs');

@@ -29,6 +29,7 @@ export async function PUT(req, { params }) {
         severityLevel: body.severityLevel,
         donationTarget: body.donationTarget,
         volunteerCount: body.volunteerCount,
+        volunteerHours:body.volunteerHours,
         images: body.images,
       },
       { new: true }
