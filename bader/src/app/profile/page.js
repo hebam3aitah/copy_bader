@@ -18,8 +18,14 @@ import {
   FaClock,
   FaCamera,
   FaChartLine,
-  FaInfoCircle,
+  FaTrophy,
+  FaHandsHelping,
+  FaStar,
+  FaCrown,
 } from "react-icons/fa";
+import { FaRegClock } from "react-icons/fa6";
+import CompletedProjects from "@/app/components/CompletedProjects";
+import ReportedIssuesTab from "@/app/components/ReportedIssuesTab";
 
 export default function UserProfile() {
   const router = useRouter();
@@ -53,6 +59,7 @@ export default function UserProfile() {
         return router.push("/login");
       }
       const user = await resUser.json();
+      console.log(user);
       setUserData({
         name: user.name || "",
         phone: user.phone || "",
@@ -220,7 +227,10 @@ export default function UserProfile() {
             <div className="flex items-center mb-6 md:mb-0">
               <div className="relative">
                 {userData.image ? (
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#fa9e1b] overflow-hidden">
+                  <div
+                    key={userData.name}
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#fa9e1b] overflow-hidden"
+                  >
                     <img
                       src={userData.image}
                       alt="Profile"
@@ -546,46 +556,63 @@ export default function UserProfile() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
+                className="px-2 py-4"
               >
-                <div>
-                  <div className="flex items-center mb-6">
-                    <FaChartLine className="text-[#fa9e1b] text-xl ml-3" />
-                    <h2 className="text-xl font-bold text-[#31124b]">
+                <div className="bg-gradient-to-br from-purple-50 to-orange-50 rounded-2xl p-6 shadow-lg">
+                  <div className="flex items-center mb-8">
+                    <div className="bg-[#31124b] p-3 rounded-full shadow-md">
+                      <FaChartLine className="text-[#fa9e1b] text-xl" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-[#31124b] mr-3">
                       التقدم والإنجازات
                     </h2>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Progress Chart (Placeholder) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Progress Chart */}
                     <motion.div
                       variants={itemVariants}
-                      className="bg-white rounded-xl border shadow-sm p-5 h-64"
+                      className="bg-white rounded-2xl border border-purple-100 shadow-md p-6 h-auto"
                     >
-                      <CompletedVolunteerActivity
-                        completedProjects={completedProjects}
-                      />
+                      <h3 className="text-lg font-medium text-[#31124b] mb-4 flex items-center">
+                        <FaClipboardCheck className="text-[#fa9e1b] mr-2" />
+                        مشاريع مكتملة
+                      </h3>
+                      <div className="h-56">
+                        <CompletedVolunteerActivity
+                          completedProjects={completedProjects}
+                        />
+                      </div>
                     </motion.div>
 
                     {/* Achievements Overview */}
                     <motion.div
                       variants={itemVariants}
-                      className="bg-white rounded-xl border shadow-sm p-5"
+                      className="bg-white rounded-2xl border border-purple-100 shadow-md p-6"
                     >
-                      <h3 className="text-lg font-medium text-[#31124b] mb-3">
+                      <h3 className="text-lg font-medium text-[#31124b] mb-4 flex items-center">
+                        <FaTrophy className="text-[#fa9e1b] mr-2" />
                         مستوى التطوع
                       </h3>
                       <div className="flex flex-col items-center">
-                        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#31124b] to-[#42195e] flex items-center justify-center text-white mb-4">
-                          <div className="text-center">
-                            <div className="text-3xl font-bold">
-                              {totalVolunteerHours}
+                        <div className="relative w-40 h-40 mb-6">
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#31124b] to-[#42195e] opacity-20"></div>
+                          <div className="absolute inset-2 rounded-full bg-white"></div>
+                          <div className="absolute inset-4 rounded-full bg-gradient-to-br from-[#31124b] to-[#42195e] flex items-center justify-center text-white">
+                            <div className="text-center">
+                              <div className="text-4xl font-bold">
+                                {totalVolunteerHours}
+                              </div>
+                              <div className="text-sm opacity-90">
+                                ساعة تطوع
+                              </div>
                             </div>
-                            <div className="text-xs opacity-75">ساعة تطوع</div>
                           </div>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3 mb-1">
+
+                        <div className="w-full bg-gray-100 rounded-full h-4 mb-2 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-[#fa9e1b] to-[#f8b957] h-3 rounded-full"
+                            className="bg-gradient-to-r from-[#fa9e1b] to-[#f8b957] h-4 rounded-full shadow-inner transition-all duration-500 ease-out"
                             style={{
                               width: `${Math.min(
                                 (totalVolunteerHours / 100) * 100,
@@ -594,22 +621,38 @@ export default function UserProfile() {
                             }}
                           ></div>
                         </div>
-                        <div className="flex justify-between w-full text-xs text-gray-500">
+
+                        <div className="flex justify-between w-full text-sm text-gray-600 mb-6">
                           <span>0 ساعة</span>
                           <span>100 ساعة</span>
                         </div>
-                        <div className="mt-4 text-center">
-                          <h4 className="font-medium text-[#31124b]">
+
+                        <div className="text-center bg-purple-50 rounded-xl p-4 w-full border border-purple-100">
+                          <h4 className="font-bold text-[#31124b] text-lg mb-1">
                             متطوع{" "}
                             {totalVolunteerHours >= 50 ? "متقدم" : "مبتدئ"}
+                            {totalVolunteerHours >= 50 && " ⭐"}
                           </h4>
-                          <p className="text-sm text-gray-500 mt-2">
+                          <p className="text-sm text-gray-700">
                             {totalVolunteerHours >= 50
                               ? "رائع! أنت متطوع متقدم الآن. واصل العطاء!"
                               : `تحتاج إلى ${
                                   50 - totalVolunteerHours
                                 } ساعة إضافية للوصول للمستوى المتقدم`}
                           </p>
+                          {totalVolunteerHours < 50 && (
+                            <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5">
+                              <div
+                                className="bg-purple-400 h-1.5 rounded-full"
+                                style={{
+                                  width: `${Math.min(
+                                    (totalVolunteerHours / 50) * 100,
+                                    100
+                                  )}%`,
+                                }}
+                              ></div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -625,180 +668,16 @@ export default function UserProfile() {
                 initial="hidden"
                 animate="visible"
               >
-                <div className="flex items-center mb-6">
-                  <FaClipboardCheck className="text-[#fa9e1b] text-xl ml-3" />
-                  <h2 className="text-xl font-bold text-[#31124b]">
-                    المشاريع التي تطوعت فيها
-                  </h2>
-                </div>
-
-                {completedProjects.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                      <thead>
-                        <tr className="bg-gray-50 border-b">
-                          <th className="py-3 px-4 text-right text-sm font-medium text-gray-600">
-                            المشروع
-                          </th>
-                          <th className="py-3 px-4 text-right text-sm font-medium text-gray-600">
-                            التاريخ
-                          </th>
-                          <th className="py-3 px-4 text-right text-sm font-medium text-gray-600">
-                            الساعات
-                          </th>
-                          <th className="py-3 px-4 text-right text-sm font-medium text-gray-600">
-                            الحالة
-                          </th>
-                          <th className="py-3 px-4 text-right text-sm font-medium text-gray-600">
-                            التفاصيل
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {completedProjects.map((project, index) => (
-                          <motion.tr
-                            key={project.id}
-                            variants={itemVariants}
-                            className="border-b hover:bg-gray-50 transition-colors"
-                          >
-                            <td className="py-4 px-4 font-medium text-[#31124b]">
-                              {project.title}
-                            </td>
-                            <td className="py-4 px-4 text-gray-600">
-                              {project.date}
-                            </td>
-                            <td className="py-4 px-4">
-                              <span className="bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-sm">
-                                {project.hours} ساعات
-                              </span>
-                            </td>
-                            <td className="py-4 px-4">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs text-white ${getStatusColor(
-                                  project.status
-                                )}`}
-                              >
-                                {project.status}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4">
-                              <button className="text-[#fa9e1b] hover:text-[#31124b] transition-colors">
-                                عرض التفاصيل
-                              </button>
-                            </td>
-                          </motion.tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                    <FaClipboardCheck className="text-gray-300 text-4xl mx-auto mb-3" />
-                    <h3 className="text-gray-500 font-medium mb-2">
-                      لم تشارك في أي مشاريع بعد
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      ابدأ رحلتك التطوعية الآن!
-                    </p>
-                    <button className="bg-[#fa9e1b] text-white px-4 py-2 rounded-lg hover:bg-[#e89018] transition-colors">
-                      استكشف فرص التطوع
-                    </button>
-                  </div>
-                )}
+                <CompletedProjects
+                  completedProjects={completedProjects}
+                  activeTab={activeTab}
+                />
               </motion.div>
             )}
 
             {/* Reported Issues Tab */}
             {activeTab === "issues" && (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <FaExclamationTriangle className="text-[#fa9e1b] text-xl ml-3" />
-                    <h2 className="text-xl font-bold text-[#31124b]">
-                      المشاكل المبلغ عنها
-                    </h2>
-                  </div>
-                  <button className="bg-[#31124b] text-white px-4 py-2 rounded-lg hover:bg-[#25093b] transition-colors flex items-center">
-                    <FaExclamationTriangle className="ml-2" />
-                    الإبلاغ عن مشكلة
-                  </button>
-                </div>
-
-                {reportedIssues.length > 0 ? (
-                  <div className="space-y-4">
-                    {reportedIssues.map((issue, index) => (
-                      <motion.div
-                        key={issue.id}
-                        variants={itemVariants}
-                        className={`border rounded-xl overflow-hidden ${
-                          issue.status === "تمت المعالجة"
-                            ? "bg-green-50 border-green-200"
-                            : issue.status === "قيد المعالجة"
-                            ? "bg-blue-50 border-blue-200"
-                            : "bg-gray-50 border-gray-200"
-                        }`}
-                      >
-                        <div className="p-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-bold text-[#31124b]">
-                                {issue.title}
-                              </h3>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {issue.description || "لا يوجد وصف"}
-                              </p>
-                              <div className="flex items-center mt-3 text-xs text-gray-500">
-                                <span className="ml-4">
-                                  تاريخ الإبلاغ: {issue.date}
-                                </span>
-                                <span>رقم البلاغ: #{issue.id}</span>
-                              </div>
-                            </div>
-                            <div>
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs text-white ${getStatusColor(
-                                  issue.status
-                                )}`}
-                              >
-                                {issue.status}
-                              </span>
-                            </div>
-                          </div>
-
-                          {issue.responseDate && (
-                            <div className="mt-4 pt-3 border-t border-dashed">
-                              <p className="text-sm text-gray-600 flex items-center">
-                                <FaInfoCircle className="ml-2 text-blue-500" />
-                                <span className="font-medium">رد الإدارة:</span>
-                                <span className="mr-2">
-                                  {issue.response || "جاري معالجة المشكلة"}
-                                </span>
-                              </p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                بتاريخ: {issue.responseDate}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                    <FaCheckCircle className="text-gray-300 text-4xl mx-auto mb-3" />
-                    <h3 className="text-gray-500 font-medium mb-2">
-                      لا توجد مشاكل مبلغ عنها
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      شكرًا لمساهمتك في تحسين النظام
-                    </p>
-                  </div>
-                )}
-              </motion.div>
+              <ReportedIssuesTab reportedIssues={reportedIssues} />
             )}
           </div>
         </div>

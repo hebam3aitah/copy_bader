@@ -39,11 +39,11 @@
 //     return new Response(JSON.stringify({ message: 'توكن غير صالح' }), { status: 401 });
 //   }
 // }
-import { getToken } from 'next-auth/jwt';
-import { authOptions } from '../auth/[...nextauth]/route';
-import { connectDB } from '@/lib/mongoose';
-import User from '@/models/User';
-import jwt from 'jsonwebtoken';
+import { getToken } from "next-auth/jwt";
+import { authOptions } from "../auth/[...nextauth]/route";
+import { connectDB } from "@/lib/mongoose";
+import User from "@/models/User";
+import jwt from "jsonwebtoken";
 
 export async function GET(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -56,37 +56,48 @@ export async function GET(req) {
       _id: user?._id, // أضف _id إذا كان user موجود
       name: token.name,
       email: token.email,
-      phone: token.phone || 'غير متوفر',
-      address: token.address || 'غير متوفر',
-      provider: 'google',
+      phone: token.phone || "غير متوفر",
+      address: token.address || "غير متوفر",
+      provider: "google",
+      image: token.image || "",
     });
   }
 
   // ✅ إذا سجل من JWT يدوي
-  const rawToken = req.cookies.get('token')?.value;
+  const rawToken = req.cookies.get("token")?.value;
   if (!rawToken) {
-    return new Response(JSON.stringify({ message: 'غير مسجل دخول' }), { status: 401 });
+    return new Response(JSON.stringify({ message: "غير مسجل دخول" }), {
+      status: 401,
+    });
   }
 
   try {
     const decoded = jwt.verify(rawToken, process.env.JWT_SECRET);
     await connectDB();
-    const user = await User.findById(decoded.userId).select('name email phone address');
-    if (!user) return new Response(JSON.stringify({ message: 'المستخدم غير موجود' }), { status: 404 });
+    const user = await User.findById(decoded.userId).select(
+      "name email phone address image"
+    );
+    if (!user)
+      return new Response(JSON.stringify({ message: "المستخدم غير موجود" }), {
+        status: 404,
+      });
     // console.log("🔥 token:", req.cookies.get('token')?.value);
 
+    console.log("User data:", user);
     return Response.json({
       _id: user._id, // أضف _id هنا أيضًا
       name: user.name,
       email: user.email,
-      phone: user.phone || '',
-      address:  user.address|| '',
-      provider: 'credentials',
-      
+      phone: user.phone || "",
+      address: user.address || "",
+      provider: "credentials",
+      image: user.image || "",
     });
   } catch (err) {
-    console.error('❌ Error in /api/current-user:', err);
+    console.error("❌ Error in /api/current-user:", err);
 
-    return new Response(JSON.stringify({ message: 'توكن غير صالح' }), { status: 401 });
+    return new Response(JSON.stringify({ message: "توكن غير صالح" }), {
+      status: 401,
+    });
   }
 }
