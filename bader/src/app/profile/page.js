@@ -563,7 +563,7 @@ export default function UserProfile() {
                     <div className="bg-[#31124b] p-3 rounded-full shadow-md">
                       <FaChartLine className="text-[#fa9e1b] text-xl" />
                     </div>
-                    <h2 className="text-2xl font-bold text-[#31124b] mr-4 mr-3">
+                    <h2 className="text-2xl font-bold text-[#31124b] mr-3">
                       التقدم والإنجازات
                     </h2>
                   </div>
