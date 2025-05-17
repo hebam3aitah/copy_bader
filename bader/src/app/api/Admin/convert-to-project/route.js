@@ -106,7 +106,7 @@ export async function POST(req) {
       donationTarget: issue.donationTarget || 0,
       volunteerCount: issue.volunteerCount || 0,
       createdFromIssue: issue._id,
-      status: 'pending',
+      status: 'in-progress',
     });
 
     issue.status = 'converted-to-project';

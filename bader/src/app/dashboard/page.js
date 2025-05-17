@@ -1,148 +1,4 @@
 
-// 'use client';
-
-// import { useEffect, useState } from 'react';
-// import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
-// export default function AdminDashboard() {
-//   const [stats, setStats] = useState({
-//     projects: 0,
-//     issues: 0,
-//     statusChart: [],
-//     userStats: { total: 0, roles: [] }
-//   });
-
-//   useEffect(() => {
-//     const fetchStats = async () => {
-//       try {
-//         const res = await fetch('/api/dashboard/stats');
-//         const data = await res.json();
-//         setStats(data);
-//       } catch (err) {
-//         console.error('خطأ في جلب الإحصائيات:', err);
-//       }
-//     };
-//     fetchStats();
-//   }, []);
-
-//   const COLORS = ['#fa9e1b', '#4caf50', '#1976d2', '#f44336', '#9c27b0'];
-
-//   return (
-//     <div dir="rtl" className="flex min-h-screen">
-//       {/* ✅ Main Content */}
-//       <main className="flex-1 p-8 bg-gray-50">
-//         <h1 className="text-3xl font-bold text-[#31124b] mb-6">الإحصائيات العامة</h1>
-
-//         {/* ✅ الإحصائيات الأساسية */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h3 className="text-lg font-semibold text-[#31124b] mb-2">عدد المشاريع</h3>
-//             <p className="text-3xl font-bold text-[#fa9e1b]">{stats.projects}</p>
-//           </div>
-
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h3 className="text-lg font-semibold text-[#31124b] mb-2">عدد البلاغات</h3>
-//             <p className="text-3xl font-bold text-[#fa9e1b]">{stats.issues}</p>
-//           </div>
-
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h3 className="text-lg font-semibold text-[#31124b] mb-2">عدد المستخدمين</h3>
-//             <p className="text-3xl font-bold text-[#fa9e1b]">{stats.userStats.total}</p>
-//           </div>
-//         </div>
-
-//        {/* ✅ Pie Charts جنب بعض */}
-// <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-//   {/* 🟣 حالات المشاريع */}
-//   <div className="bg-white rounded-lg shadow p-6">
-//     <h3 className="text-lg font-semibold text-[#31124b] mb-4">نسبة حالات المشاريع</h3>
-//     <ResponsiveContainer width="100%" height={300}>
-//       <PieChart>
-//         <Pie
-//           data={stats.statusChart}
-//           dataKey="value"
-//           nameKey="name"
-//           cx="50%"
-//           cy="50%"
-//           outerRadius={100}
-//           label
-//         >
-//           {stats.statusChart.map((entry, index) => (
-//             <Cell key={`status-${index}`} fill={COLORS[index % COLORS.length]} />
-//           ))}
-//         </Pie>
-//         <Tooltip />
-//         <Legend />
-//       </PieChart>
-//     </ResponsiveContainer>
-//   </div>
-
-//   {/* 🔵 أدوار المستخدمين */}
-//   <div className="bg-white rounded-lg shadow p-6">
-//     <h3 className="text-lg font-semibold text-[#31124b] mb-4">نسبة المستخدمين </h3>
-//     <ResponsiveContainer width="100%" height={300}>
-//       <PieChart>
-//         <Pie
-//           data={stats.userStats.roles}
-//           dataKey="count"
-//           nameKey="role"
-//           cx="50%"
-//           cy="50%"
-//           outerRadius={100}
-//           label
-//         >
-//           {stats.userStats.roles.map((entry, index) => (
-//             <Cell key={`user-${index}`} fill={COLORS[index % COLORS.length]} />
-//           ))}
-//         </Pie>
-//         <Tooltip />
-//         <Legend />
-//       </PieChart>
-//     </ResponsiveContainer>
-//   </div>
-//   {/* ✅ المستخدمين والبلاغات الجدد */}
-// <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-//   <div className="bg-white rounded-lg shadow p-6">
-//     <h3 className="text-lg font-semibold text-[#31124b] mb-2">المستخدمين الجدد (آخر 7 أيام)</h3>
-//     <p className="text-3xl font-bold text-[#fa9e1b]">{stats.newUsersThisWeek || 0}</p>
-//   </div>
-
-//   <div className="bg-white rounded-lg shadow p-6">
-//     <h3 className="text-lg font-semibold text-[#31124b] mb-2">البلاغات الجديدة (آخر 7 أيام)</h3>
-//     <p className="text-3xl font-bold text-[#fa9e1b]">{stats.newIssuesThisWeek || 0}</p>
-//   </div>
-// </div>
-// {/* ✅ أعلى 3 مشاريع حسب التبرعات */}
-// <div className="bg-white rounded-lg shadow p-6 mb-10">
-//   <h3 className="text-lg font-semibold text-[#31124b] mb-4">أعلى 3 مشاريع من حيث التبرعات أو التطوع</h3>
-//   <table className="w-full text-sm text-right text-gray-700">
-//     <thead className="text-xs border-b text-gray-600 uppercase">
-//       <tr>
-//         <th className="py-2">اسم المشروع</th>
-//         <th className="py-2">تبرعات</th>
-//         <th className="py-2">متطوعين</th>
-//       </tr>
-//     </thead>
-//     <tbody>
-//       {stats.topProjects?.map((proj, index) => (
-//         <tr key={index} className="border-b">
-//           <td className="py-2">{proj.title}</td>
-//           <td className="py-2 text-center">{proj.donationsCount || 0}</td>
-//           <td className="py-2 text-center">{proj.volunteersCount || 0}</td>
-//         </tr>
-//       ))}
-//     </tbody>
-//   </table>
-// </div>
-
-// </div>
-
-              
-//       </main>
-//     </div>
-//   );
-// }
-
 'use client';
 
 import { useEffect, useState } from 'react';

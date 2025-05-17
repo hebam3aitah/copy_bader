@@ -14,17 +14,6 @@ export async function POST(req) {
     issue.status = 'approved';
     await issue.save();
 
-    // إنشاء مشروع بناءً على البلاغ المقبول
-    await Project.create({
-      title: issue.title,
-      description: issue.description,
-      location: issue.location,
-      category: issue.category,
-      images: issue.images,
-      issue: issue._id,
-      reportedAt: issue.createdAt,
-      status: 'pending'
-    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

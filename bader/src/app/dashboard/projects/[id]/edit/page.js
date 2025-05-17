@@ -11,7 +11,7 @@ export default function EditProjectPage({ params }) {
     title: '',
     description: '',
     location: '',
-    status: 'pending',
+    status: 'in-progress',
     priority: 'medium',
   });
 

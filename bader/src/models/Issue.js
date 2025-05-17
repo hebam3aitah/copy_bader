@@ -28,6 +28,7 @@ const IssueSchema = new mongoose.Schema(
     },
     donationTarget: { type: Number, default: 0 },
     volunteerCount: { type: Number, default: 0 },
+    volunteerHours:{ type: Number, default: 0 },
     reviewedByAdmin: {
       type: Boolean,
       default: false,

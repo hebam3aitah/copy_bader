@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const volunteerSchema = new mongoose.Schema(
   {
     volunteer: {
@@ -5,15 +7,15 @@ const volunteerSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    name: { type: String, required: true }, // إضافة
-    email: { type: String, required: true }, // إضافة
-    phone: { type: String }, // إضافة
-    age: { type: Number }, // إضافة
-    job: { type: String }, // إضافة
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String },
+    age: { type: Number },
+    job: { type: String },
     task: { type: String, required: true },
     experience: { type: String },
-    interests: { type: String }, // إضافة
-    availability: { type: String }, // إضافة
+    interests: { type: String },
+    availability: { type: String },
     projectAssigned: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
     status: {
       type: String,
@@ -33,3 +35,5 @@ const volunteerSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+export default mongoose.models.Volunteer || mongoose.model("Volunteer", volunteerSchema);
