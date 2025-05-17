@@ -26,54 +26,79 @@ export default function ProjectDetails() {
   const params = useParams();
   const [project, setProject] = useState(null);
   const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [commentText, setCommentText] = useState("");
   const [liked, setLiked] = useState(false);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportCommentId, setReportCommentId] = useState(null);
   const [error, setError] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        if (!params.id) {
-          throw new Error("معرف المشروع غير صالح");
-        }
+    fetchCurentUserId();
+  }, []);
 
-        setLoading(true);
-        const response = await fetch(`/api/projects/${params.id}`);
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error || "فشل في جلب بيانات المشروع");
-        }
-        const data = await response.json();
-        if (!data.project) {
-          throw new Error("لم يتم العثور على المشروع");
-        }
-        setProject(data.project);
-        setComments(data.comments || []);
-      } catch (err) {
-        console.error("Error fetching project data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  useEffect(() => {
+    if (params.id) {
+      fetchProjectData();
+    }
+  }, [currentUserId, params.id]);
+
+  const fetchCurentUserId = async () => {
+    try {
+      const resUser = await fetch("/api/current-user");
+      if (resUser.status === 401) {
+        return;
       }
-    };
+      const user = await resUser.json();
+      setCurrentUserId(user._id);
+    } catch (err) {
+      console.error("Error fetching current user ID:", err);
+    }
+  };
 
-    fetchProjectData();
-  }, [params.id]);
+  const fetchProjectData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/projects/${params.id}`);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "فشل في جلب بيانات المشروع");
+      }
+
+      const data = await response.json();
+      if (!data.project) {
+        throw new Error("لم يتم العثور على المشروع");
+      }
+
+      setProject(data.project);
+      setComments(data.comments || []);
+
+      if (currentUserId) {
+        const hasLiked = data.project.likes.includes(currentUserId);
+        setLiked(hasLiked);
+      } else {
+        setLiked(false);
+      }
+    } catch (err) {
+      console.error("Error fetching project data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLike = async () => {
     try {
-      console.log(params.id);
       const res = await fetch(`/api/projects/${params.id}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // مهم جداً عشان يبعث الكوكيز مع الطلب
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -82,29 +107,55 @@ export default function ProjectDetails() {
       }
 
       const updatedProject = await res.json();
-      console.log("Project updated:", updatedProject);
-      // مثلاً ممكن تحدّثي الحالة في الواجهة بناءً على updatedProject
+
+      // 🟢 تحديث بيانات المشروع
+      setProject((prev) => ({
+        ...prev,
+        likes: updatedProject.likes,
+      }));
+
+      // ✅ تحديث حالة اللايك بناءً على البيانات الجديدة
+      const hasLiked = updatedProject.likes.includes(currentUserId);
+      setLiked(hasLiked);
     } catch (error) {
       console.error("Error while liking the project:", error.message);
     }
   };
-  
 
   const handleAddComment = async (e) => {
     e.preventDefault();
+
+    if (!currentUserId) {
+      toast.error("يجب تسجيل الدخول لكتابة تعليق");
+      return;
+    }
+
     if (!commentText.trim()) return;
+
     try {
+      setIsSending(true);
+
       const response = await fetch(`/api/projects/${params.id}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: commentText }),
+        credentials: "include",
+        body: JSON.stringify({
+          text: commentText,
+          user: currentUserId, // 👈 إرسال الـ user ID
+        }),
       });
+
       if (!response.ok) throw new Error("فشل في إضافة التعليق");
+
       const newComment = await response.json();
       setComments([newComment, ...comments]);
       setCommentText("");
+      toast.success("تمت إضافة التعليق بنجاح");
     } catch (err) {
       console.error("Error adding comment:", err);
+      toast.error("حدث خطأ أثناء إضافة التعليق");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -213,7 +264,7 @@ export default function ProjectDetails() {
       <div className="relative w-full h-[60vh]">
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60 z-10"></div>
         <Image
-          src={project.mainImage || PLACEHOLDER}
+          src={project.images[0] || PLACEHOLDER}
           alt={project.title || "مشروع"}
           fill
           className="object-cover"
@@ -226,11 +277,16 @@ export default function ProjectDetails() {
           <div className="flex items-center gap-4 text-white">
             <div className="flex items-center">
               <FiUsers className="ml-1" />
-              <span>{project.volunteers.length || 0} متطوع</span>
+              <span>{project.volunteerCount || 0} متطوع</span>
             </div>
             <div className="flex items-center">
-              <FiDollarSign className="ml-1" />
-              <span>{project.donations || 0} ريال</span>
+              {project.donationTarget - project.donations > 0 ? (
+                <span>
+                  {project.donationTarget - project.donations} دينار أردني
+                </span>
+              ) : (
+                <span></span>
+              )}
             </div>
           </div>
         </div>
@@ -317,14 +373,6 @@ export default function ProjectDetails() {
                     </AnimatePresence>
                   </div>
                 </div>
-
-                <Link
-                  href={`/projects/${params.id}/reports`}
-                  className="flex items-center gap-2 text-[#31124b] hover:text-[#fa9e1b] transition-colors"
-                >
-                  <FiBarChart2 className="w-5 h-5" />
-                  <span>التقارير</span>
-                </Link>
               </div>
 
               {/* معرض الصور */}
@@ -456,35 +504,76 @@ export default function ProjectDetails() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">تاريخ البدء</span>
-                  <span className="font-semibold text-[#31124b]">
-                    {project.startDate || "-"}
+                  <span className="text-gray-600">متطوعون</span>
+                  <span>
+                    {project.volunteers.length || 0} /{" "}
+                    {project.volunteerCount || 0}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">تاريخ الانتهاء</span>
-                  <span className="font-semibold text-[#31124b]">
-                    {project.endDate || "-"}
-                  </span>
+                  <div className="w-full mt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-700">
+                        تم جمع {project.donations} دينار
+                      </span>
+                      <span className="text-sm text-gray-700">
+                        الهدف: {project.donationTarget} دينار
+                      </span>
+                    </div>
+
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                      <div
+                        className="bg-[#fa9e1b] h-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(
+                            (project.donations / project.donationTarget) * 100,
+                            100
+                          )}%`,
+                        }}
+                      ></div>
+                    </div>
+
+                    {project.donationTarget - project.donations > 0 ? (
+                      <p className="mt-2 text-sm text-gray-600">
+                        تبقّى {project.donationTarget - project.donations} دينار
+                        للوصول للهدف
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-sm text-green-600 font-semibold">
+                        تم تحقيق الهدف 🎉
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-8 space-y-4">
-                <Link
-                  href={`/volunteer-opportunities/${params.id}`}
-                  className="block w-full bg-[#4caf50] text-white text-center py-3 rounded-lg hover:bg-[#3f6f41] transition-colors"
-                >
-                  تطوع معنا
-                </Link>
-
-                <Link
-                  href={`/payment/${params.id}`}
-                  className="block w-full bg-[#1976d2] text-white text-center py-3 rounded-lg hover:bg-[#52779b] transition-colors"
-                >
-                  تبرع الآن
-                </Link>
-              </div>
+              {project.status === "in-progress" ? (
+                <div className="mt-8 space-y-4">
+                  {project.volunteers.length < project.volunteerCount ? (
+                    <Link
+                      href={`/volunteer?project_id=${params.id}`}
+                      className="block w-full bg-[#4caf50] text-white text-center py-3 rounded-lg hover:bg-[#3f6f41] transition-colors"
+                    >
+                      تطوع معنا
+                    </Link>
+                  ) : (
+                    <span></span>
+                  )}
+                  {project.donationTarget - project.donations !== 0 ? (
+                    <Link
+                      href={`/DonatePage?projectId=${params.id}`}
+                      className="block w-full bg-[#1976d2] text-white text-center py-3 rounded-lg hover:bg-[#52779b] transition-colors"
+                    >
+                      تبرع الآن
+                    </Link>
+                  ) : (
+                    <span></span>
+                  )}
+                </div>
+              ) : (
+                <span></span>
+              )}
             </motion.div>
           </div>
         </div>
